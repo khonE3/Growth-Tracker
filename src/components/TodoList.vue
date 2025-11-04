@@ -30,6 +30,11 @@
           <span class="md:hidden">+</span>
         </button>
       </div>
+      
+      <!-- Show error below form -->
+      <div v-if="todoStore.error" class="mt-2 bg-red-900/20 border border-red-500 rounded-lg p-3 text-red-400 text-sm">
+        ❌ {{ todoStore.error }}
+      </div>
     </form>
 
     <!-- Todo Stats -->
@@ -138,15 +143,22 @@ async function handleAddTodo() {
   if (!newTodoTitle.value.trim()) return
   
   try {
-    await todoStore.createTodo({
+    const newTodo = {
       title: newTodoTitle.value.trim(),
       date: props.selectedDate,
       completed: false,
       created_at: new Date().toISOString()
-    })
+    }
+    
+    await todoStore.createTodo(newTodo)
     newTodoTitle.value = ''
+    
+    // Refresh to ensure UI updates
+    await todoStore.fetchTodos()
+    
   } catch (err) {
-    console.error('Failed to add todo:', err)
+    console.error('❌ Failed to add todo:', err)
+    alert('เกิดข้อผิดพลาด: ' + err.message)
   }
 }
 
@@ -155,6 +167,7 @@ async function handleToggle(id) {
     await todoStore.toggleTodo(id)
   } catch (err) {
     console.error('Failed to toggle todo:', err)
+    alert('ไม่สามารถอัพเดทสถานะได้')
   }
 }
 
@@ -163,6 +176,7 @@ async function handleEdit(id, newTitle) {
     await todoStore.updateTodo(id, { title: newTitle })
   } catch (err) {
     console.error('Failed to update todo:', err)
+    alert('ไม่สามารถแก้ไขได้')
   }
 }
 
@@ -171,6 +185,7 @@ async function handleDelete(id) {
     await todoStore.deleteTodo(id)
   } catch (err) {
     console.error('Failed to delete todo:', err)
+    alert('ไม่สามารถลบได้')
   }
 }
 </script>

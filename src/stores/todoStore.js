@@ -7,12 +7,10 @@ export const useTodoStore = defineStore('todo', () => {
   const loading = ref(false)
   const error = ref(null)
 
-  // Get todos for a specific date
-  const getTodosByDate = computed(() => {
-    return (date) => {
-      return todos.value.filter(todo => todo.date === date)
-    }
-  })
+  // Get todos for a specific date - returns a function for reactivity
+  function getTodosByDate(date) {
+    return todos.value.filter(todo => todo.date === date)
+  }
 
   // Fetch all todos
   async function fetchTodos() {
@@ -45,6 +43,11 @@ export const useTodoStore = defineStore('todo', () => {
         .select()
       
       if (createError) throw createError
+      
+      if (!data || data.length === 0) {
+        throw new Error('No data returned from Supabase')
+      }
+      
       todos.value.unshift(data[0])
       return data[0]
     } catch (err) {

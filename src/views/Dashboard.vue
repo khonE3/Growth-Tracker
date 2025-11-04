@@ -37,8 +37,8 @@ import TodoList from '../components/TodoList.vue'
 const todoStore = useTodoStore()
 const selectedDate = ref(new Date().toISOString().split('T')[0])
 
-onMounted(() => {
-  todoStore.fetchTodos()
+onMounted(async () => {
+  await todoStore.fetchTodos()
 })
 
 function handleDateSelected(date) {
