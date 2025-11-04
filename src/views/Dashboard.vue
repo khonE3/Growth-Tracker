@@ -21,7 +21,11 @@
       </div>
 
       <!-- Todo List Section (Right/Bottom) -->
-      <div class="lg:col-span-2">
+      <div class="lg:col-span-2 space-y-6">
+        <!-- Daily Tasks (แสดงก่อน) -->
+        <DailyTasks />
+        
+        <!-- Regular Todo List -->
         <TodoList :selected-date="selectedDate" />
       </div>
     </div>
@@ -31,14 +35,21 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useTodoStore } from '../stores/todoStore'
+import { useDailyTaskStore } from '../stores/dailyTaskStore'
 import CalendarView from '../components/CalendarView.vue'
 import TodoList from '../components/TodoList.vue'
+import DailyTasks from '../components/DailyTasks.vue'
 
 const todoStore = useTodoStore()
+const dailyTaskStore = useDailyTaskStore()
 const selectedDate = ref(new Date().toISOString().split('T')[0])
 
 onMounted(async () => {
-  await todoStore.fetchTodos()
+  // Load both regular todos and daily tasks
+  await Promise.all([
+    todoStore.fetchTodos(),
+    dailyTaskStore.fetchDailyTasks()
+  ])
 })
 
 function handleDateSelected(date) {
