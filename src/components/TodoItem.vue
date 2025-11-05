@@ -100,6 +100,7 @@
 
 <script setup>
 import { ref, nextTick } from 'vue'
+import { formatThaiTime } from '../utils/thailandTime'
 
 const props = defineProps({
   todo: {
@@ -115,11 +116,7 @@ const editTitle = ref('')
 const editInput = ref(null)
 
 function formatTime(timestamp) {
-  if (!timestamp) return ''
-  const date = new Date(timestamp)
-  const hours = date.getHours().toString().padStart(2, '0')
-  const minutes = date.getMinutes().toString().padStart(2, '0')
-  return `${hours}:${minutes}`
+  return formatThaiTime(timestamp)
 }
 
 async function startEdit() {

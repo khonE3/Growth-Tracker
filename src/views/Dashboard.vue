@@ -39,10 +39,11 @@ import { useDailyTaskStore } from '../stores/dailyTaskStore'
 import CalendarView from '../components/CalendarView.vue'
 import TodoList from '../components/TodoList.vue'
 import DailyTasks from '../components/DailyTasks.vue'
+import { getTodayThailand } from '../utils/thailandTime'
 
 const todoStore = useTodoStore()
 const dailyTaskStore = useDailyTaskStore()
-const selectedDate = ref(new Date().toISOString().split('T')[0])
+const selectedDate = ref(getTodayThailand())
 
 onMounted(async () => {
   // Load both regular todos and daily tasks

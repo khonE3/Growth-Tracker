@@ -91,6 +91,7 @@
 import { ref, computed } from 'vue'
 import { useTodoStore } from '../stores/todoStore'
 import TodoItem from './TodoItem.vue'
+import { toThailandISO, formatThaiDate } from '../utils/thailandTime'
 
 const props = defineProps({
   selectedDate: {
@@ -145,9 +146,9 @@ async function handleAddTodo() {
   try {
     const newTodo = {
       title: newTodoTitle.value.trim(),
-      date: props.selectedDate,
+      date: props.selectedDate,  // ใช้วันที่ที่เลือก (YYYY-MM-DD)
       completed: false,
-      created_at: new Date().toISOString()
+      created_at: toThailandISO()  // ใช้เวลาไทยสำหรับ timestamp
     }
     
     await todoStore.createTodo(newTodo)

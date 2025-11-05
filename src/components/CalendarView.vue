@@ -85,6 +85,7 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
 import { useTodoStore } from '../stores/todoStore'
+import { getTodayThailand, parseThailandDate, formatThaiDate } from '../utils/thailandTime'
 
 const props = defineProps({
   selectedDate: {
@@ -96,7 +97,7 @@ const props = defineProps({
 const emit = defineEmits(['date-selected'])
 
 const todoStore = useTodoStore()
-const currentDate = ref(new Date(props.selectedDate))
+const currentDate = ref(parseThailandDate(props.selectedDate))
 
 const dayHeaders = ['อา', 'จ', 'อ', 'พ', 'พฤ', 'ศ', 'ส']
 
@@ -146,8 +147,13 @@ const calendarDays = computed(() => {
 })
 
 function createDayObject(date, isCurrentMonth) {
-  const dateStr = date.toISOString().split('T')[0]
-  const today = new Date().toISOString().split('T')[0]
+  // สร้าง date string โดยไม่ใช้ toISOString() เพื่อหลีกเลี่ยง timezone shift
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  const dateStr = `${year}-${month}-${day}`
+  
+  const today = getTodayThailand()
   const todosForDate = todoStore.getTodosByDate(dateStr)
   
   return {
@@ -183,6 +189,6 @@ function nextMonth() {
 }
 
 watch(() => props.selectedDate, (newDate) => {
-  currentDate.value = new Date(newDate)
+  currentDate.value = parseThailandDate(newDate)
 })
 </script>
