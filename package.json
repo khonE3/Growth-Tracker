@@ -9,10 +9,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@heroicons/vue": "^2.2.0",
     "@supabase/supabase-js": "^2.39.0",
+    "pinia": "^2.1.7",
     "vue": "^3.3.11",
-    "vue-router": "^4.2.5",
-    "pinia": "^2.1.7"
+    "vue-router": "^4.2.5"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.5.2",

@@ -3,7 +3,7 @@
     <!-- Header with Toggle -->
     <div class="flex items-center justify-between mb-4">
       <h2 class="text-xl md:text-2xl font-bold text-tech-accent flex items-center gap-2">
-        <span>📅</span>
+        <CalendarDaysIcon class="w-6 h-6" />
         <span>ปฏิทิน</span>
       </h2>
       <button
@@ -11,15 +11,10 @@
         class="p-2 hover:bg-tech-green-900/30 rounded-lg transition-colors"
         :title="isExpanded ? 'ซ่อนปฏิทิน' : 'แสดงปฏิทิน'"
       >
-        <svg 
+        <ChevronUpIcon 
           class="w-5 h-5 text-tech-green-400 transition-transform duration-300" 
           :class="{ 'rotate-180': !isExpanded }"
-          fill="none" 
-          stroke="currentColor" 
-          viewBox="0 0 24 24"
-        >
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
-        </svg>
+        />
       </button>
     </div>
 
@@ -43,9 +38,7 @@
           class="p-2 hover:bg-tech-green-900/30 rounded-lg transition-colors flex-shrink-0"
           title="เดือนก่อนหน้า"
         >
-          <svg class="w-5 h-5 text-tech-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-          </svg>
+          <ChevronLeftIcon class="w-5 h-5 text-tech-green-400" />
         </button>
         
         <!-- Month Selector -->
@@ -75,9 +68,7 @@
           class="p-2 hover:bg-tech-green-900/30 rounded-lg transition-colors flex-shrink-0"
           title="เดือนถัดไป"
         >
-          <svg class="w-5 h-5 text-tech-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-          </svg>
+          <ChevronRightIcon class="w-5 h-5 text-tech-green-400" />
         </button>
       </div>
 
@@ -85,9 +76,10 @@
       <div class="flex justify-center mb-4">
         <button
           @click="jumpToToday"
-          class="text-xs text-tech-green-400 hover:text-tech-accent transition-colors px-3 py-1 rounded-full border border-tech-green-800 hover:border-tech-accent"
+          class="text-xs text-tech-green-400 hover:text-tech-accent transition-colors px-3 py-1 rounded-full border border-tech-green-800 hover:border-tech-accent flex items-center gap-1"
         >
-          📍 กลับวันนี้
+          <MapPinIcon class="w-3 h-3" />
+          <span>กลับวันนี้</span>
         </button>
       </div>
 
@@ -121,7 +113,9 @@
           ]"
         >
           <span class="block">{{ day.day }}</span>
-          <span v-if="day.hasTodos" class="absolute bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-tech-accent rounded-full"></span>
+          <span v-if="day.hasTodos" class="absolute bottom-1 left-1/2 transform -translate-x-1/2">
+            <CheckCircleIcon class="w-2 h-2 text-tech-accent" />
+          </span>
         </button>
       </div>
 
@@ -136,7 +130,7 @@
           <span>วันที่เลือก</span>
         </div>
         <div class="flex items-center gap-2">
-          <div class="w-1 h-1 bg-tech-accent rounded-full"></div>
+          <CheckCircleIcon class="w-3 h-3 text-tech-accent" />
           <span>มี Todo</span>
         </div>
       </div>
@@ -146,6 +140,14 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue'
+import { 
+  CalendarDaysIcon, 
+  ChevronUpIcon, 
+  ChevronLeftIcon, 
+  ChevronRightIcon,
+  MapPinIcon,
+  CheckCircleIcon 
+} from '@heroicons/vue/24/outline'
 import { useTodoStore } from '../stores/todoStore'
 import { getTodayThailand, parseThailandDate, formatThaiDate } from '../utils/thailandTime'
 

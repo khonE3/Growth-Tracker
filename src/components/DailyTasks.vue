@@ -3,19 +3,21 @@
     <!-- Header with Badge -->
     <div class="flex items-center justify-between mb-4">
       <h2 class="text-xl md:text-2xl font-bold text-tech-accent flex items-center gap-2">
-        <span>🔄</span>
+        <ArrowPathIcon class="w-6 h-6" />
         <span>รายการประจำวัน</span>
-        <span class="text-xs bg-tech-accent/20 text-tech-accent px-2 py-1 rounded-full">
-          ทุกวัน
+        <span class="text-xs bg-tech-accent/20 text-tech-accent px-2 py-1 rounded-full flex items-center gap-1">
+          <ClockIcon class="w-3 h-3" />
+          <span>ทุกวัน</span>
         </span>
       </h2>
       <button
         v-if="dailyTaskStore.dailyTasks.length > 0"
         @click="resetAll"
-        class="text-xs text-tech-green-400 hover:text-tech-accent transition-colors"
+        class="text-xs text-tech-green-400 hover:text-tech-accent transition-colors flex items-center gap-1"
         title="รีเซ็ตทั้งหมด"
       >
-        รีเซ็ต
+        <ArrowUturnLeftIcon class="w-4 h-4" />
+        <span>รีเซ็ต</span>
       </button>
     </div>
 
@@ -31,10 +33,11 @@
         />
         <button 
           type="submit"
-          class="btn-primary text-sm whitespace-nowrap"
+          class="btn-primary text-sm whitespace-nowrap flex items-center gap-1"
           :disabled="!newTaskTitle.trim() || dailyTaskStore.loading"
         >
-          + เพิ่ม
+          <PlusCircleIcon class="w-4 h-4" />
+          <span>เพิ่ม</span>
         </button>
       </div>
     </form>
@@ -60,15 +63,10 @@
                   : 'border-tech-green-600 hover:border-tech-accent'
               ]"
             >
-              <svg 
+              <CheckIcon 
                 v-if="task.completed" 
-                class="w-3 h-3 text-tech-dark" 
-                fill="none" 
-                stroke="currentColor" 
-                viewBox="0 0 24 24"
-              >
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
-              </svg>
+                class="w-3 h-3 text-tech-dark stroke-[3]"
+              />
             </div>
           </button>
 
@@ -105,18 +103,14 @@
               class="p-1.5 hover:bg-tech-green-900/30 rounded transition-colors"
               title="แก้ไข"
             >
-              <svg class="w-4 h-4 text-tech-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-              </svg>
+              <PencilSquareIcon class="w-4 h-4 text-tech-green-400" />
             </button>
             <button
               @click="handleDelete(task.id)"
               class="p-1.5 hover:bg-red-900/30 rounded transition-colors"
               title="ลบ"
             >
-              <svg class="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-              </svg>
+              <TrashIcon class="w-4 h-4 text-red-400" />
             </button>
           </div>
         </div>
@@ -125,7 +119,7 @@
 
     <!-- Empty State -->
     <div v-else class="text-center py-6">
-      <div class="text-4xl mb-2">🔄</div>
+      <ArrowPathIcon class="w-12 h-12 mx-auto text-tech-green-700 mb-2" />
       <p class="text-tech-green-500 text-sm">ยังไม่มีรายการประจำวัน</p>
       <p class="text-tech-green-700 text-xs mt-1">เพิ่มกิจกรรมที่ต้องทำทุกวัน</p>
     </div>
@@ -148,7 +142,17 @@
 
 <script setup>
 import { ref, computed, nextTick } from 'vue'
+import { 
+  ArrowPathIcon, 
+  ClockIcon, 
+  ArrowUturnLeftIcon, 
+  PlusCircleIcon,
+  CheckIcon,
+  PencilSquareIcon,
+  TrashIcon
+} from '@heroicons/vue/24/outline'
 import { useDailyTaskStore } from '../stores/dailyTaskStore'
+import { toThailandISO } from '../utils/thailandTime'
 
 const dailyTaskStore = useDailyTaskStore()
 const newTaskTitle = ref('')
@@ -177,7 +181,7 @@ async function handleAddTask() {
       title: newTaskTitle.value.trim(),
       completed: false,
       display_order: maxOrder + 1,
-      created_at: new Date().toISOString()
+      created_at: toThailandISO()
     })
     
     newTaskTitle.value = ''

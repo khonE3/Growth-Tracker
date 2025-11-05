@@ -19,15 +19,10 @@
               : 'border-tech-green-700 hover:border-tech-green-500'
           ]"
         >
-          <svg 
+          <CheckIcon 
             v-if="todo.completed" 
-            class="w-3 h-3 md:w-4 md:h-4 text-white" 
-            fill="none" 
-            stroke="currentColor" 
-            viewBox="0 0 24 24"
-          >
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
-          </svg>
+            class="w-3 h-3 md:w-4 md:h-4 text-white stroke-[3]"
+          />
         </div>
       </button>
 
@@ -44,7 +39,8 @@
           >
             {{ todo.title }}
           </p>
-          <p class="text-xs text-tech-green-600 mt-1">
+          <p class="text-xs text-tech-green-600 mt-1 flex items-center gap-1">
+            <ClockIcon class="w-3 h-3" />
             {{ formatTime(todo.created_at) }}
           </p>
         </div>
@@ -59,15 +55,17 @@
             @keydown.esc="cancelEdit"
           />
           <div class="flex gap-2">
-            <button type="submit" class="btn-primary text-xs py-1 px-3">
-              บันทึก
+            <button type="submit" class="btn-primary text-xs py-1 px-3 flex items-center gap-1">
+              <CheckIcon class="w-4 h-4" />
+              <span>บันทึก</span>
             </button>
             <button 
               type="button" 
               @click="cancelEdit"
-              class="btn-secondary text-xs py-1 px-3"
+              class="btn-secondary text-xs py-1 px-3 flex items-center gap-1"
             >
-              ยกเลิก
+              <XMarkIcon class="w-4 h-4" />
+              <span>ยกเลิก</span>
             </button>
           </div>
         </form>
@@ -80,18 +78,14 @@
           class="p-1.5 md:p-2 hover:bg-tech-green-900/30 rounded transition-colors"
           title="แก้ไข"
         >
-          <svg class="w-4 h-4 text-tech-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-          </svg>
+          <PencilSquareIcon class="w-4 h-4 text-tech-green-400" />
         </button>
         <button
           @click="confirmDelete"
           class="p-1.5 md:p-2 hover:bg-red-900/30 rounded transition-colors"
           title="ลบ"
         >
-          <svg class="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-          </svg>
+          <TrashIcon class="w-4 h-4 text-red-400" />
         </button>
       </div>
     </div>
@@ -100,6 +94,13 @@
 
 <script setup>
 import { ref, nextTick } from 'vue'
+import { 
+  CheckIcon, 
+  ClockIcon, 
+  PencilSquareIcon, 
+  TrashIcon,
+  XMarkIcon
+} from '@heroicons/vue/24/outline'
 import { formatThaiTime } from '../utils/thailandTime'
 
 const props = defineProps({

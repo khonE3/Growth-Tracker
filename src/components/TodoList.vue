@@ -3,10 +3,11 @@
     <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
       <h2 class="text-xl md:text-2xl font-bold text-tech-accent flex items-center gap-2">
-        <span>✅</span>
+        <CheckCircleIcon class="w-6 h-6" />
         <span>รายการ Todo</span>
       </h2>
-      <p class="text-sm text-tech-green-400">
+      <p class="text-sm text-tech-green-400 flex items-center gap-1">
+        <CalendarIcon class="w-4 h-4" />
         {{ formatDateThai(selectedDate) }}
       </p>
     </div>
@@ -23,17 +24,18 @@
         />
         <button 
           type="submit"
-          class="btn-primary whitespace-nowrap"
+          class="btn-primary whitespace-nowrap flex items-center gap-2"
           :disabled="!newTodoTitle.trim() || todoStore.loading"
         >
+          <PlusCircleIcon class="w-5 h-5" />
           <span class="hidden md:inline">เพิ่มรายการ</span>
-          <span class="md:hidden">+</span>
         </button>
       </div>
       
       <!-- Show error below form -->
-      <div v-if="todoStore.error" class="mt-2 bg-red-900/20 border border-red-500 rounded-lg p-3 text-red-400 text-sm">
-        ❌ {{ todoStore.error }}
+      <div v-if="todoStore.error" class="mt-2 bg-red-900/20 border border-red-500 rounded-lg p-3 text-red-400 text-sm flex items-center gap-2">
+        <ExclamationCircleIcon class="w-5 h-5 flex-shrink-0" />
+        <span>{{ todoStore.error }}</span>
       </div>
     </form>
 
@@ -55,18 +57,19 @@
 
     <!-- Loading State -->
     <div v-if="todoStore.loading && !todosForSelectedDate.length" class="text-center py-8">
-      <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-tech-green-500 border-t-transparent"></div>
+      <ArrowPathIcon class="w-8 h-8 mx-auto text-tech-green-500 animate-spin" />
       <p class="text-tech-green-400 mt-2">กำลังโหลด...</p>
     </div>
 
     <!-- Error State -->
-    <div v-else-if="todoStore.error" class="bg-red-900/20 border border-red-500 rounded-lg p-4 text-red-400">
+    <div v-else-if="todoStore.error" class="bg-red-900/20 border border-red-500 rounded-lg p-4 text-red-400 flex items-center gap-2">
+      <ExclamationTriangleIcon class="w-6 h-6 flex-shrink-0" />
       <p>เกิดข้อผิดพลาด: {{ todoStore.error }}</p>
     </div>
 
     <!-- Empty State -->
     <div v-else-if="!todosForSelectedDate.length" class="text-center py-12">
-      <div class="text-6xl mb-4">📝</div>
+      <DocumentTextIcon class="w-16 h-16 mx-auto text-tech-green-700 mb-4" />
       <p class="text-tech-green-400">ยังไม่มีรายการในวันนี้</p>
       <p class="text-tech-green-600 text-sm mt-2">เริ่มต้นเพิ่มรายการเพื่อติดตามความคืบหน้าของคุณ</p>
     </div>
@@ -89,6 +92,15 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import { 
+  CheckCircleIcon, 
+  CalendarIcon, 
+  PlusCircleIcon,
+  ExclamationCircleIcon,
+  ExclamationTriangleIcon,
+  ArrowPathIcon,
+  DocumentTextIcon
+} from '@heroicons/vue/24/outline'
 import { useTodoStore } from '../stores/todoStore'
 import TodoItem from './TodoItem.vue'
 import { toThailandISO, formatThaiDate } from '../utils/thailandTime'

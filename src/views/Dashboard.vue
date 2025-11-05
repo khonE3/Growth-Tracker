@@ -2,11 +2,14 @@
   <div class="min-h-screen bg-tech-dark p-4 md:p-8">
     <!-- Header -->
     <header class="mb-8">
-      <h1 class="text-3xl md:text-5xl font-bold glow-text text-center mb-2">
-        📊 Growth Tracker
-      </h1>
+      <div class="flex items-center justify-center gap-3 mb-2">
+        <ChartBarIcon class="w-10 h-10 text-tech-accent" />
+        <h1 class="text-3xl md:text-5xl font-bold glow-text">
+          Growth Tracker
+        </h1>
+      </div>
       <p class="text-tech-green-400 text-center text-sm md:text-base">
-        ติดตามการเติบโตของคุณทุกวัน
+        มาเข้าดันเจียนฟาร์มเลเวลกันเถอะ!
       </p>
     </header>
 
@@ -34,6 +37,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import { ChartBarIcon } from '@heroicons/vue/24/solid'
 import { useTodoStore } from '../stores/todoStore'
 import { useDailyTaskStore } from '../stores/dailyTaskStore'
 import CalendarView from '../components/CalendarView.vue'
