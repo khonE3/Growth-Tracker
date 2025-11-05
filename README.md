@@ -125,6 +125,63 @@ npm run build
 npm run preview
 ```
 
+## 🚀 Deploy ไปยัง Vercel
+
+### วิธีที่ 1: Deploy ผ่าน Vercel Dashboard (แนะนำ)
+
+1. **Push โค้ดขึ้น GitHub**
+   ```bash
+   git add .
+   git commit -m "Ready for deployment"
+   git push origin main
+   ```
+
+2. **Import Project ใน Vercel**
+   - ไปที่ [vercel.com](https://vercel.com)
+   - คลิก "Add New" → "Project"
+   - Import repository `Growth-Tracker`
+   - Framework Preset จะตรวจจับเป็น **Vite** อัตโนมัติ
+
+3. **ตั้งค่า Environment Variables**
+   
+   ใน Vercel Dashboard → Settings → Environment Variables เพิ่ม:
+   ```
+   VITE_SUPABASE_URL=your_supabase_project_url
+   VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+   ```
+
+4. **Deploy**
+   - คลิก "Deploy"
+   - รอ 1-2 นาที
+   - เว็บพร้อมใช้งานที่ `https://your-project.vercel.app`
+
+### วิธีที่ 2: Deploy ผ่าน Vercel CLI
+
+```bash
+# ติดตั้ง Vercel CLI
+npm i -g vercel
+
+# Login
+vercel login
+
+# Deploy
+vercel
+
+# ตั้งค่า Environment Variables
+vercel env add VITE_SUPABASE_URL
+vercel env add VITE_SUPABASE_ANON_KEY
+
+# Deploy to Production
+vercel --prod
+```
+
+### Auto Deployment
+เมื่อ push โค้ดใหม่:
+- Branch `main` → Auto deploy to Production
+- Branch อื่นๆ → Auto deploy to Preview URL
+
+📖 **คู่มือ Deploy แบบละเอียด**: ดูได้ที่ [DEPLOY.md](./DEPLOY.md)
+
 ## 🎯 การใช้งาน
 
 ### 1. เพิ่ม Todo
