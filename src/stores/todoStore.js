@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { supabase } from '../lib/supabase'
+import { useAuthStore } from './authStore'
 
 export const useTodoStore = defineStore('todo', () => {
   const todos = ref([])
@@ -12,18 +13,28 @@ export const useTodoStore = defineStore('todo', () => {
     return todos.value.filter(todo => todo.date === date)
   }
 
-  // Fetch all todos
+  // Fetch all todos (Guest or User based on auth state)
   async function fetchTodos() {
     loading.value = true
     error.value = null
     try {
-      const { data, error: fetchError } = await supabase
+      const authStore = useAuthStore()
+      let query = supabase
         .from('todos')
         .select('*')
         .order('created_at', { ascending: false })
+
+      // Filter based on auth state
+      if (authStore.isGuest) {
+        query = query.eq('is_guest', true)
+      } else {
+        query = query.eq('is_guest', false).eq('user_id', authStore.currentUserId)
+      }
+      
+      const { data, error: fetchError } = await query
       
       if (fetchError) throw fetchError
-      todos.value = data
+      todos.value = data || []
     } catch (err) {
       error.value = err.message
       console.error('Error fetching todos:', err)
@@ -37,9 +48,18 @@ export const useTodoStore = defineStore('todo', () => {
     loading.value = true
     error.value = null
     try {
+      const authStore = useAuthStore()
+      
+      // Add auth fields
+      const newTodo = {
+        ...todoData,
+        is_guest: authStore.isGuest,
+        user_id: authStore.isGuest ? null : authStore.currentUserId
+      }
+
       const { data, error: createError } = await supabase
         .from('todos')
-        .insert([todoData])
+        .insert([newTodo])
         .select()
       
       if (createError) throw createError

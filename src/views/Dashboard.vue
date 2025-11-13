@@ -35,6 +35,66 @@
       </div>
     </Transition>
     
+    <!-- Auth Modal -->
+    <AuthModal v-if="showAuthModal" @close="showAuthModal = false" />
+
+    <!-- User Menu Button -->
+    <button
+      v-if="showContent"
+      @click="toggleUserMenu"
+      class="fixed top-4 left-4 sm:top-6 sm:left-6 z-50 bg-gradient-to-br from-purple-600/20 to-blue-600/20 backdrop-blur-md border border-purple-500/30 rounded-full p-2 sm:p-3 hover:scale-110 transition-all duration-300 group shadow-lg hover:shadow-purple-500/50"
+    >
+      <UserCircleIcon class="w-5 h-5 sm:w-6 sm:h-6 text-purple-300 group-hover:text-purple-100 transition-colors" />
+    </button>
+
+    <!-- User Menu Dropdown -->
+    <Transition name="slide-fade">
+      <div v-if="showUserMenu && showContent" class="fixed top-16 left-4 sm:top-20 sm:left-6 z-50 bg-gradient-to-br from-tech-dark via-purple-900/90 to-blue-900/90 backdrop-blur-md border border-purple-500/30 rounded-2xl shadow-2xl shadow-purple-500/20 p-4 min-w-[250px]">
+        <!-- User Info -->
+        <div class="mb-4 pb-4 border-b border-purple-500/20">
+          <p class="text-sm text-purple-300/70 mb-1">{{ authStore.isGuest ? 'Guest Mode' : 'Signed in as' }}</p>
+          <p class="text-white font-semibold">{{ authStore.userName }}</p>
+          <p v-if="!authStore.isGuest" class="text-xs text-purple-300/50">{{ authStore.userEmail }}</p>
+        </div>
+
+        <!-- Menu Items -->
+        <div class="space-y-2">
+          <button
+            v-if="authStore.isGuest"
+            @click="openAuthModal"
+            class="w-full text-left px-4 py-2 rounded-lg bg-gradient-to-r from-purple-600/20 to-blue-600/20 hover:from-purple-600/30 hover:to-blue-600/30 text-purple-300 hover:text-white transition-all"
+          >
+            <span class="flex items-center gap-2">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+              </svg>
+              Sign In / Sign Up
+            </span>
+          </button>
+
+          <button
+            v-else
+            @click="handleSignOut"
+            class="w-full text-left px-4 py-2 rounded-lg hover:bg-red-500/20 text-red-300 hover:text-red-200 transition-all"
+          >
+            <span class="flex items-center gap-2">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              </svg>
+              Sign Out
+            </span>
+          </button>
+        </div>
+
+        <!-- Mode Indicator -->
+        <div class="mt-4 pt-4 border-t border-purple-500/20">
+          <p class="text-xs text-center text-purple-300/50">
+            {{ authStore.isGuest ? '🌐 Shared Data Mode' : '🔒 Personal Data Mode' }}
+          </p>
+        </div>
+      </div>
+    </Transition>
+    
     <!-- Background Toggle Button -->
     <button
       @click="toggleContent"
@@ -290,23 +350,55 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { ChartBarIcon } from '@heroicons/vue/24/solid'
-import { PhotoIcon, RectangleStackIcon } from '@heroicons/vue/24/outline'
+import { PhotoIcon, RectangleStackIcon, UserCircleIcon } from '@heroicons/vue/24/outline'
+import { useAuthStore } from '../stores/authStore'
 import { useTodoStore } from '../stores/todoStore'
 import { useDailyTaskStore } from '../stores/dailyTaskStore'
+import AuthModal from '../components/AuthModal.vue'
 import CalendarView from '../components/CalendarView.vue'
 import TodoList from '../components/TodoList.vue'
 import DailyTasks from '../components/DailyTasks.vue'
 import { getTodayThailand } from '../utils/thailandTime'
 
+const authStore = useAuthStore()
 const todoStore = useTodoStore()
 const dailyTaskStore = useDailyTaskStore()
 const selectedDate = ref(getTodayThailand())
 const showContent = ref(true)
 const showIntro = ref(true)
+const showAuthModal = ref(false)
+const showUserMenu = ref(false)
 
 // Toggle content visibility
 const toggleContent = () => {
   showContent.value = !showContent.value
+  if (!showContent.value) {
+    showUserMenu.value = false
+  }
+}
+
+// Toggle user menu
+const toggleUserMenu = () => {
+  showUserMenu.value = !showUserMenu.value
+}
+
+// Open auth modal
+const openAuthModal = () => {
+  showAuthModal.value = true
+  showUserMenu.value = false
+}
+
+// Handle sign out
+const handleSignOut = async () => {
+  const result = await authStore.signOut()
+  if (result.success) {
+    showUserMenu.value = false
+    // Reload data as guest
+    await Promise.all([
+      todoStore.fetchTodos(),
+      dailyTaskStore.fetchDailyTasks()
+    ])
+  }
 }
 
 onMounted(async () => {
@@ -315,11 +407,21 @@ onMounted(async () => {
     showIntro.value = false
   }, 2500)
 
-  // Load both regular todos and daily tasks
+  // Initialize auth
+  await authStore.initialize()
+
+  // Load data based on auth state
   await Promise.all([
     todoStore.fetchTodos(),
     dailyTaskStore.fetchDailyTasks()
   ])
+
+  // Show auth modal if guest (optional - you can remove this if you want)
+  // setTimeout(() => {
+  //   if (authStore.isGuest) {
+  //     showAuthModal.value = true
+  //   }
+  // }, 3000)
 })
 
 function handleDateSelected(date) {
@@ -328,6 +430,21 @@ function handleDateSelected(date) {
 </script>
 
 <style scoped>
+/* User Menu Animation */
+.slide-fade-enter-active {
+  transition: all 0.3s ease-out;
+}
+
+.slide-fade-leave-active {
+  transition: all 0.2s cubic-bezier(1, 0.5, 0.8, 1);
+}
+
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+  transform: translateY(-10px);
+  opacity: 0;
+}
+
 /* Intro Animation */
 .intro-container {
   position: relative;

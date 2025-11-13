@@ -1,21 +1,32 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { supabase } from '../lib/supabase'
+import { useAuthStore } from './authStore'
 
 export const useDailyTaskStore = defineStore('dailyTask', () => {
   const dailyTasks = ref([])
   const loading = ref(false)
   const error = ref(null)
 
-  // Fetch all daily tasks
+  // Fetch all daily tasks (Guest or User based on auth state)
   async function fetchDailyTasks() {
     loading.value = true
     error.value = null
     try {
-      const { data, error: fetchError } = await supabase
+      const authStore = useAuthStore()
+      let query = supabase
         .from('daily_tasks')
         .select('*')
         .order('display_order', { ascending: true })
+
+      // Filter based on auth state
+      if (authStore.isGuest) {
+        query = query.eq('is_guest', true)
+      } else {
+        query = query.eq('is_guest', false).eq('user_id', authStore.currentUserId)
+      }
+      
+      const { data, error: fetchError } = await query
       
       if (fetchError) throw fetchError
       dailyTasks.value = data || []
@@ -32,9 +43,18 @@ export const useDailyTaskStore = defineStore('dailyTask', () => {
     loading.value = true
     error.value = null
     try {
+      const authStore = useAuthStore()
+      
+      // Add auth fields
+      const newTask = {
+        ...taskData,
+        is_guest: authStore.isGuest,
+        user_id: authStore.isGuest ? null : authStore.currentUserId
+      }
+
       const { data, error: createError } = await supabase
         .from('daily_tasks')
-        .insert([taskData])
+        .insert([newTask])
         .select()
       
       if (createError) throw createError
